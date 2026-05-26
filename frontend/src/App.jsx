@@ -44,7 +44,7 @@ function App() {
 
     } catch (err) {
       console.log(err);
-      alert("Upload Failed ❌");
+      alert("Upload Failed ❌, Please upload a valid CSV file with correct format.");
     }
   };
 
