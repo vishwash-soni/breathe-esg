@@ -6,32 +6,25 @@ function App() {
   const [records, setRecords] = useState([]);
   const [sourceType, setSourceType] = useState("SAP");
 
-  // 🔥 Backend API base URL
   const API = import.meta.env.VITE_API_URL;
 
-  // 📥 Fetch records
+  // Fetch records
   const fetchRecords = async () => {
-  try {
-    console.log("API:", API);
-
-    const res = await axios.get(`${API}/records/`);
-    console.log("DATA:", res.data);
-
-    setRecords(res.data);
-
-  } catch (err) {
-    console.log("ERROR:", err);
-  }
-};
+    try {
+      const res = await axios.get(`${API}/records/`);
+      setRecords(res.data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   useEffect(() => {
     fetchRecords();
   }, []);
 
-  // 📤 Upload file
+  // Upload file
   const handleUpload = async () => {
     try {
-
       const fileInput = document.getElementById("fileInput");
       const file = fileInput.files[0];
 
@@ -47,7 +40,6 @@ function App() {
       await axios.post(`${API}/upload/`, formData);
 
       alert("Uploaded Successfully 🚀");
-
       fetchRecords();
 
     } catch (err) {
@@ -56,7 +48,7 @@ function App() {
     }
   };
 
-  // ✅ Approve record
+  // Approve record
   const approveRecord = async (id) => {
     try {
       await axios.post(`${API}/approve/${id}/`);
@@ -66,7 +58,7 @@ function App() {
     }
   };
 
-  // ❌ Reject record
+  // Reject record
   const rejectRecord = async (id) => {
     try {
       await axios.post(`${API}/reject/${id}/`);
@@ -106,6 +98,7 @@ function App() {
         >
           Upload
         </button>
+
       </div>
 
       {/* Records */}
