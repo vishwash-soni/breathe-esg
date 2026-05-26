@@ -4,132 +4,97 @@ import axios from "axios";
 function App() {
 
   const [records, setRecords] = useState([]);
-
   const [sourceType, setSourceType] = useState("SAP");
 
+  // 🔥 Backend API base URL
+  const API = import.meta.env.VITE_API_URL;
 
-  // Fetch records
+  // 📥 Fetch records
   const fetchRecords = async () => {
+  try {
+    console.log("API:", API);
 
-    try {
+    const res = await axios.get(`${API}/records/`);
+    console.log("DATA:", res.data);
 
-      const res = await axios.get(
-        "http://127.0.0.1:8000/records/"
-      );
+    setRecords(res.data);
 
-      setRecords(res.data);
-
-    } catch (err) {
-
-      console.log(err);
-    }
-  };
-
+  } catch (err) {
+    console.log("ERROR:", err);
+  }
+};
 
   useEffect(() => {
     fetchRecords();
   }, []);
 
-
-  // Upload file
+  // 📤 Upload file
   const handleUpload = async () => {
-
     try {
 
-      const fileInput =
-        document.getElementById("fileInput");
-
+      const fileInput = document.getElementById("fileInput");
       const file = fileInput.files[0];
 
       if (!file) {
-
         alert("Please select a file");
-
         return;
       }
 
       const formData = new FormData();
-
       formData.append("file", file);
-
       formData.append("source_type", sourceType);
 
-      console.log("Uploading:", sourceType);
+      await axios.post(`${API}/upload/`, formData);
 
-      await axios.post(
-        "http://127.0.0.1:8000/upload/",
-        formData
-      );
-
-      alert("Uploaded Successfully");
+      alert("Uploaded Successfully 🚀");
 
       fetchRecords();
 
     } catch (err) {
-
       console.log(err);
-
-      alert("Upload Failed");
+      alert("Upload Failed ❌");
     }
   };
 
-
-  // Approve
+  // ✅ Approve record
   const approveRecord = async (id) => {
-
-    await axios.post(
-      `http://127.0.0.1:8000/approve/${id}/`
-    );
-
-    fetchRecords();
+    try {
+      await axios.post(`${API}/approve/${id}/`);
+      fetchRecords();
+    } catch (err) {
+      console.log(err);
+    }
   };
 
-
-  // Reject
+  // ❌ Reject record
   const rejectRecord = async (id) => {
-
-    await axios.post(
-      `http://127.0.0.1:8000/reject/${id}/`
-    );
-
-    fetchRecords();
+    try {
+      await axios.post(`${API}/reject/${id}/`);
+      fetchRecords();
+    } catch (err) {
+      console.log(err);
+    }
   };
-
 
   return (
+    <div style={{ padding: "20px", fontFamily: "Arial" }}>
 
-    <div style={{ padding: "20px" }}>
-
-      <h1>Breathe ESG Dashboard</h1>
-
+      <h1>🌱 Breathe ESG Dashboard</h1>
 
       {/* Upload Section */}
-
       <div style={{ marginBottom: "20px" }}>
 
         <select
           value={sourceType}
           onChange={(e) => setSourceType(e.target.value)}
-          style={{
-            padding: "10px",
-            marginRight: "10px"
-          }}
+          style={{ padding: "10px", marginRight: "10px" }}
         >
-
           <option value="SAP">SAP</option>
-
           <option value="UTILITY">UTILITY</option>
-
           <option value="TRAVEL">TRAVEL</option>
-
         </select>
 
-
-        <input
-          type="file"
-          id="fileInput"
-        />
-
+        <input type="file" id="fileInput" />
 
         <button
           onClick={handleUpload}
@@ -141,42 +106,35 @@ function App() {
         >
           Upload
         </button>
-
       </div>
 
-
       {/* Records */}
+      <h2>📊 Total Records: {records.length}</h2>
 
-      <h2>Total Records: {records.length}</h2>
-
+      {records.length === 0 && (
+        <p>No records found 😐</p>
+      )}
 
       {records.map((record) => (
-
         <div
           key={record.id}
           style={{
             border: "1px solid gray",
             padding: "15px",
             marginBottom: "15px",
-            backgroundColor: record.suspicious
-              ? "#811919"
-              : "#1e1e1e"
+            backgroundColor: record.suspicious ? "#811919" : "#1e1e1e",
+            color: "white"
           }}
         >
 
           <p><b>Source:</b> {record.source_type}</p>
-
           <p><b>Activity:</b> {record.activity_type}</p>
-
           <p><b>Quantity:</b> {record.quantity}</p>
-
           <p><b>Status:</b> {record.status}</p>
 
           <p>
-            <b>Suspicious:</b>
-            {record.suspicious ? "YES" : "NO"}
+            <b>Suspicious:</b> {record.suspicious ? "YES ⚠️" : "NO ✅"}
           </p>
-
 
           <button
             onClick={() => approveRecord(record.id)}
@@ -187,7 +145,6 @@ function App() {
           >
             Approve
           </button>
-
 
           <button
             onClick={() => rejectRecord(record.id)}
