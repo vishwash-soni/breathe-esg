@@ -1,6 +1,6 @@
 # Example CSV Structure
 
-The platform supports CSV/XLSX uploads with the following structure:
+The platform supports CSV uploads with the following structure:
 
 | category | activity_type      | quantity | unit   |
 |----------|--------------------|----------|--------|
